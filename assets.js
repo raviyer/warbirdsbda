@@ -103,7 +103,10 @@
                 this.selNo = 1;
                 this.startNo = 1;
                 this.fieldNum = 1;
-                this.numbers = [1,2,3,4,5,6,7,8,9,10];
+		this.numbers = [];
+		for (var i = this.startNo; i <= 100; ++i) {
+			this.numbers.push(i);
+		}
                 this.needed = {};
 
                 this.get_asset = function(k) {
@@ -152,8 +155,9 @@
                   // Print Report
                   for (var k in this.needed) {
                     console.log(k);
+                    a = this.get_asset(k);
                     this.dtf += ".echo @" + k + "_count@ - "
-                     + this.get_asset(k).description + "\n";
+                     + a.label + " - " + a.description + "\n";
                   };
                   
                   // Free the variables
