@@ -1,0 +1,6 @@
+#copy:hover {
+    color: red;
+}
+#copy:active {
+    color: blue;
+}
