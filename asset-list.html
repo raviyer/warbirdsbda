@@ -1,56 +1,101 @@
 <!--
-This file is part of Warbirds BDA Script Generator.
+     This file is part of Warbirds BDA Script Generator.
 
-    Foobar is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+     Foobar is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
 
-    Warbirds BDA Script Generator is distributed in the hope that it will 
-    be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+     Warbirds BDA Script Generator is distributed in the hope that it will
+     be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+     You should have received a copy of the GNU General Public License
+     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
-(c) Noflyz - United Mud Movers - noflyz.wix.com/united-mud-movers
--->
+     (c) Noflyz - United Mud Movers - noflyz.wix.com/united-mud-movers
+   -->
+<form>
+  <div class="form-group">
+    <label for="fieldNum">Enter Field Number</label>
+    <div class="form-check">
+      <input class="form-control" type="number" id="fieldNum" ng-model="assetCtrl.fieldNum"
+             ng-change="assetCtrl.gen_dtf()">
+    </div>
 
-<div class="container">
-    <span class="col-md-2">Type: <select ng-options="c.name for c in assetCtrl.assets" ng-model="assetCtrl.sel"></select></span>
-    <span class="col-md-2">How Many: <select ng-options="n for n in assetCtrl.numbers" ng-model="assetCtrl.selNo"></select></span>
-    <span class="col-md-2">Start At: <select ng-options="n for n in assetCtrl.numbers" ng-model="assetCtrl.startNo"></select></span>
-    <button type="submit" class="btn btn-default" ng-click="assetCtrl.add_asset()">+</button>
+    <div class="form-check">
+      <label class="form-check-label">
+        <input class="form-check-input" type="radio"
+               ng-model="assetCtrl.reportType" name="reporttype" value="remaining"
+               ng-change="assetCtrl.gen_dtf()">
+        Show Remaining - Script prints targets still up at the field
+      </label>
+    </div>
+    <div class="form-check">
+      <label class="form-check-label">
+        <input class="form-check-input" type="radio" name="reporttype"
+               ng-model="assetCtrl.reportType"
+               value="destroyed" ng-change="assetCtrl.gen_dtf()">
+        Show Destroyed - Script prints targets destroyed at the field
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="selectAsset">Type</label>
+      <select class="form-control" ng-options="c.name + ' ' + c.label + ' - ' + c.description for c in assetCtrl.assets" ng-model="assetCtrl.sel"></select>
+    </div>
+    <div class="form-group">
+      <label for="howMany">How Many</label>
+      <select class="form-control" id="howMany"
+              ng-options="n for n in assetCtrl.numbers"
+              ng-model="assetCtrl.selNo"></select>
+    </div>
+    <div class="form-group">
+      <label for="startAt">Start At</label>
+      <select class="form-control" id="startAt"
+              ng-options="n for n in assetCtrl.numbers"
+              ng-model="assetCtrl.startNo">
+      </select>
+      <button class="form-control btn btn-success" type="submit" ng-click="assetCtrl.add_asset()">
+            <i class="fa fa-plus-square" aria-hidden="true"></i>
+          </button>
+  </div>
+</form>
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    Assets
+  </div>
+  <table class="table table-primary table-striped">
+    <tr>
+      <th>Code</th>
+      <th>Description</th>
+      <th>Start At</th>
+      <th>Number</th>
+      <th>-</th>
+    </tr>
 </div>
-<div class="container">
-    <span class="col-md-4"><label>{{assetCtrl.sel.description}}</label></span>
+<div class="panel-body">
+  <tr ng-repeat="(k,v) in assetCtrl.needed">
+    <td>{{k}}</td>
+    <td>{{v[0]}}</td>
+    <td>{{v[1]}}</td>
+    <td>{{v[2]}}</td>
+    <td><button class="btn btn-danger" type="submit"
+                ng-click="assetCtrl.remove_asset(k)">
+      <i class="fa fa-minus-square" aria-hidden="true"></i>
+    </button>
+    </td>
+  </tr>
+  </table>
 </div>
-<div class="container">
-    Enter Field Number: <input type="number" ng-model="assetCtrl.fieldNum" ng-change="assetCtrl.gen_dtf()"></input>
-</div>
-<div class="container">
-    <table class="table table-striped table-condensed">
-      <tr>
-	<th>code</th>
-	<th>description</th>
-	<th>Start At</th>
-	<th>Number</th>
-	<th>-</th>
-      </tr>
-      <tr ng-repeat="(k,v) in assetCtrl.needed">
-	<td>{{k}}</td>
-	<td>{{v[0]}}</td>
-	<td>{{v[1]}}</td>
-	<td>{{v[2]}}</td>
-	<td><button type="submit" class="btn btn-default" 
-	    ng-click="assetCtrl.remove_asset(k)">-</button></td>
-      </td>
-    </table>
-</div>
-<div>
-    Cut and paste the below to a text file (Include all lines including the %%s): Name the file accordingly, e.g. if this is for field 32 you might name it F32bda.dtf. You can then bring it up in warbirds by typing .dotfile F32bda
-    <pre>
+
+Cut and paste the below to a text file (Include all lines including the %%s): Name the file accordingly, e.g. if this is for field 32 you might name it F32bda.dtf. You can then bring it up in warbirds by typing .dotfile F32bda
+<div class="card">
+  <i class="fa fa-files-o" aria-hidden="true" ng-click="assetCtrl.copy_code()"> Copy to clipboard</i>
+  <pre>
+    <code id="gencode">
 {{assetCtrl.dtf}}
-    </pre>
+    </code>
+  </pre>
 </div>
