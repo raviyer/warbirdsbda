@@ -5,7 +5,7 @@
 //     the Free Software Foundation, either version 3 of the License, or
 //     (at your option) any later version.
 
-//     Warbirds BDA Script Generator is distributed in the hope that it will 
+//     Warbirds BDA Script Generator is distributed in the hope that it will
 //     be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 //     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //     GNU General Public License for more details.
@@ -103,12 +103,22 @@
                 this.selNo = 1;
                 this.startNo = 1;
                 this.fieldNum = 1;
-		this.numbers = [];
-		for (var i = this.startNo; i <= 100; ++i) {
-			this.numbers.push(i);
-		}
+                this.reportType = "remaining";
+                this.numbers = [];
+                for (var i = this.startNo; i <= 100; ++i) {
+                        this.numbers.push(i);
+                }
                 this.needed = {};
-
+                this.copy_code = function() {
+                  var code = document.getElementById("gencode").innerHTML;
+                  var ta = document.createElement("textarea");
+                  document.body.append(ta);
+                  ta.value = code;
+                  ta.select();
+                  document.execCommand("copy");
+                  document.body.removeChild(ta);
+                  console.log('copied');
+                }
                 this.get_asset = function(k) {
                   for (var i = 0; i < this.assets.length; ++i) {
                     if (this.assets[i].name === k) {
@@ -118,7 +128,7 @@
                   return null;
                 };
                 this.add_asset = function() {
-                  this.needed[this.sel.name] = [this.sel.description, this.startNo, this.selNo];
+                  this.needed[this.sel.name] = [this.sel.label + ' - ' + this.sel.description, this.startNo, this.selNo];
                   this.gen_dtf();
                 };
                 this.remove_asset = function(k) {
@@ -145,13 +155,20 @@
                     var s = o[1];
                     var e = o[2];
                     for (var i = s; i <= e; ++i) {
+                      var remaining = "";
+                      var destroyed = "";
+                      if (this.reportType === "remaining") {
+                        remaining = ".intadd " + k + "_count 1\n";
+                      } else {
+                        destroyed = ".intadd " + k + "_count 1\n";
+                      }
                       this.dtf += "if (DESTROYED(GROUNDOBJECT(\"F" +
                        this.fieldNum.pad(3) + k + i.pad(3)
-                       + "\")))\n{\n}\nelse\n{\n"
-                       + ".intadd " + k + "_count 1\n}\n";
+                       + "\")))\n{\n" + destroyed + "}\nelse\n{\n"
+                       + remaining + "}\n";
                     }
                   };
-                  
+
                   // Print Report
                   for (var k in this.needed) {
                     console.log(k);
@@ -159,7 +176,7 @@
                     this.dtf += ".echo @" + k + "_count@ - "
                      + a.label + " - " + a.description + "\n";
                   };
-                  
+
                   // Free the variables
                   for (var k in this.needed) {
                     this.dtf += ".varfree " + k + "_count\n";
@@ -168,10 +185,10 @@
                   this.dtf += "%%\n";
                 };
               },
-              
+
               controllerAs: 'assetCtrl'
      };
      return o;
    });
- 
+
 })();
